@@ -1,0 +1,82 @@
+package Tests;
+
+import static io.restassured.RestAssured.*;
+
+import java.util.Map;
+
+import Utilities.ConfigReader;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.filter.log.LogDetail;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+import io.restassured.specification.QueryableRequestSpecification;
+import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
+import io.restassured.specification.SpecificationQuerier;
+import Reports.ExtentReportManager;
+
+public class SpecBuilders {
+	
+	public static RequestSpecification reqSpec(Map headers, String basePath,  Object body) {
+		return new RequestSpecBuilder().log(LogDetail.ALL)
+				.addHeaders(headers)
+		.setBaseUri(ConfigReader.getProperty("baseurl"))
+		.setBasePath(basePath)
+		.setContentType(ContentType.JSON)
+		.setBody(body)
+		.build();
+	}
+	
+	//getRequest
+	public static RequestSpecification reqSpec(String basePath) {
+		return new RequestSpecBuilder().log(LogDetail.ALL)
+		.setBaseUri(ConfigReader.getProperty("baseurl"))
+		.setBasePath(basePath)
+		.setContentType(ContentType.JSON)
+		.build();
+	}
+	
+	public static ResponseSpecification resSpec() {
+		return new ResponseSpecBuilder().log(LogDetail.ALL)
+		.expectContentType(ContentType.JSON)
+		.expectStatusCode(200)
+		.build();
+	}
+	
+	public static void printRequestLogs(RequestSpecification spec) {
+		QueryableRequestSpecification reqspec = SpecificationQuerier.query(spec);
+		Reports.ExtentReportManager.logInfoDetails("Endpoint is " + reqspec.getBaseUri());
+        //methods : get , post , put , delete
+        ExtentReportManager.logInfoDetails("Method is " + reqspec.getMethod());
+        ExtentReportManager.logInfoDetails("Headers are ");
+        ExtentReportManager.logHeaders(reqspec.getHeaders().asList());
+        ExtentReportManager.logInfoDetails("Request body is ");
+        ExtentReportManager.logJson(reqspec.getBody());
+	}
+	
+	public static void printResponseLogs(Response response) {
+		ExtentReportManager.logInfoDetails("Response status is " + response.getStatusCode());
+        ExtentReportManager.logInfoDetails("Response Headers are ");
+        ExtentReportManager.logHeaders(response.getHeaders().asList());
+        ExtentReportManager.logInfoDetails("Response body is ");
+        ExtentReportManager.logJson(response.getBody().prettyPrint());
+	}
+	
+	public static Response getResponse(Map headers, String basePath, Object body) {
+		RequestSpecification rSpec = reqSpec(headers, basePath, body);
+		Response response = given().spec(rSpec).post();
+		printRequestLogs(rSpec);
+		printResponseLogs(response);
+		return response;
+	}
+	
+	public static Response getResponse(String basePath) {
+		RequestSpecification rSpec = reqSpec(basePath);
+		Response response = given().spec(rSpec).get();
+		printRequestLogs(rSpec);
+		printResponseLogs(response);
+		return response;
+	}
+
+}
