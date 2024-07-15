@@ -46,7 +46,8 @@ public class SpecBuilders {
 	
 	public static void printRequestLogs(RequestSpecification spec, String requestType) {
 		QueryableRequestSpecification reqspec = SpecificationQuerier.query(spec);
-		Reports.ExtentReportManager.logInfoDetails("Endpoint is " + reqspec.getBaseUri());
+		Reports.ExtentReportManager.logInfoDetails("Base URI is " + reqspec.getBaseUri());
+		Reports.ExtentReportManager.logInfoDetails("Base path is " + reqspec.getBasePath());
         //methods : get , post , put , delete
         ExtentReportManager.logInfoDetails("Method is " + requestType);
         ExtentReportManager.logInfoDetails("Headers are ");
@@ -67,7 +68,12 @@ public class SpecBuilders {
 	
 	public static Response getResponse(Map headers, String basePath, Object body, String requestType) {
 		RequestSpecification rSpec = reqSpec(headers, basePath, body);
-		Response response = given().spec(rSpec).post();
+		Response response = switch (requestType) {
+			case "post" -> given().spec(rSpec).post();
+			case "patch" -> given().spec(rSpec).patch();
+			default ->throw new IllegalArgumentException("Unexpected value: " + requestType);
+		};
+
 		printRequestLogs(rSpec, requestType);
 		printResponseLogs(response);
 		return response;

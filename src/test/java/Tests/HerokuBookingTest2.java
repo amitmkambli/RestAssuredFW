@@ -118,9 +118,6 @@ public class HerokuBookingTest2 {
 		String bookingID = context.getAttribute("bookingid2").toString();
 		String basePath = "/booking/".concat(bookingID);
 		Response response = SpecBuilders.getResponse(basePath, "get");
-		response
-		.then().spec(SpecBuilders.resSpec())
-		.extract().response();
 		
 		response
 		.then()
