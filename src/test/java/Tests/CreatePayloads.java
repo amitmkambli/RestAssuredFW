@@ -63,4 +63,5 @@ public class CreatePayloads {
 				.totalprice(price).depositpaid(true).bookingdates(bd).additionalneeds("COFFEE").build();
 		return booking;
 	}
+	
 }

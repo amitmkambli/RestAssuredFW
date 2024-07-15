@@ -44,10 +44,9 @@ public class HerokuBookingTest {
 	}
 		
 	@Test(priority = 1)
-	public void getTokenWIthSpecBuilder(ITestContext context) throws Exception {
+	public void getToken(ITestContext context) throws Exception {
 		
-		Response response = SpecBuilders.getResponse(new HashMap<String, Object>(), "/auth", CreatePayloads.CreateToken());
-				
+		Response response = SpecBuilders.getResponse(new HashMap<String, Object>(), "/auth", CreatePayloads.CreateToken(), "post");
 		String token = response
 				.then()
 				.body("token", Matchers.notNullValue())
@@ -67,8 +66,7 @@ public class HerokuBookingTest {
 		
 		System.out.println("token from context -> "+context.getAttribute("token"));
 		String jsonBody = CreatePayloads.payloadFromFile(ConfigReader.getProperty("bookjson"));
-		
-		Response response = SpecBuilders.getResponse(headers, "/booking", jsonBody);
+		Response response = SpecBuilders.getResponse(headers, "/booking", jsonBody, "post");
 				
 		response
 		.then()
@@ -88,14 +86,7 @@ public class HerokuBookingTest {
 	public void createBookingViaObjectMapper(ITestContext context) throws Exception {
 		
 		System.out.println("token from context -> "+context.getAttribute("token"));
-		
-		Response response = SpecBuilders.getResponse(headers, "/booking", CreatePayloads.createPaylodViaObjectMapper());
-				
-		response
-		.then()
-		.extract()
-		.response();
-		
+		Response response = SpecBuilders.getResponse(headers, "/booking", CreatePayloads.createPaylodViaObjectMapper(), "post");
 		String bookingid = response.jsonPath().get("bookingid").toString();
 		System.out.println("bookingid -> "+bookingid);
 		
@@ -107,15 +98,7 @@ public class HerokuBookingTest {
 	public void createBookingViaLombok(ITestContext context) throws Exception {
 		
 		System.out.println("token from context -> "+context.getAttribute("token"));
-		
-				
-		Response response = SpecBuilders.getResponse(headers, "/booking", CreatePayloads.createPaylodViaLombok());
-		
-				response
-				.then()
-				.extract()
-				.response();
-		
+		Response response = SpecBuilders.getResponse(headers, "/booking", CreatePayloads.createPaylodViaLombok(), "post");
 		String bookingid = response.jsonPath().get("bookingid").toString();
 		System.out.println("bookingid -> "+bookingid);
 		
@@ -135,8 +118,7 @@ public class HerokuBookingTest {
 		
 		String bookingID = context.getAttribute("bookingid1").toString();
 		String basePath = "/booking/".concat(bookingID);
-					
-		Response response = SpecBuilders.getResponse(basePath);
+		Response response = SpecBuilders.getResponse(basePath, "get");
 		response
 		.then().spec(SpecBuilders.resSpec())
 		.extract().response();

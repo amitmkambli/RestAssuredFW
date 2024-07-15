@@ -44,15 +44,17 @@ public class SpecBuilders {
 		.build();
 	}
 	
-	public static void printRequestLogs(RequestSpecification spec) {
+	public static void printRequestLogs(RequestSpecification spec, String requestType) {
 		QueryableRequestSpecification reqspec = SpecificationQuerier.query(spec);
 		Reports.ExtentReportManager.logInfoDetails("Endpoint is " + reqspec.getBaseUri());
         //methods : get , post , put , delete
-        ExtentReportManager.logInfoDetails("Method is " + reqspec.getMethod());
+        ExtentReportManager.logInfoDetails("Method is " + requestType);
         ExtentReportManager.logInfoDetails("Headers are ");
         ExtentReportManager.logHeaders(reqspec.getHeaders().asList());
-        ExtentReportManager.logInfoDetails("Request body is ");
-        ExtentReportManager.logJson(reqspec.getBody());
+        if ("postpatchupdate".contains(requestType)) {
+			ExtentReportManager.logInfoDetails("Request body is ");
+			ExtentReportManager.logJson(reqspec.getBody());
+		}
 	}
 	
 	public static void printResponseLogs(Response response) {
@@ -63,18 +65,18 @@ public class SpecBuilders {
         ExtentReportManager.logJson(response.getBody().prettyPrint());
 	}
 	
-	public static Response getResponse(Map headers, String basePath, Object body) {
+	public static Response getResponse(Map headers, String basePath, Object body, String requestType) {
 		RequestSpecification rSpec = reqSpec(headers, basePath, body);
 		Response response = given().spec(rSpec).post();
-		printRequestLogs(rSpec);
+		printRequestLogs(rSpec, requestType);
 		printResponseLogs(response);
 		return response;
 	}
 	
-	public static Response getResponse(String basePath) {
+	public static Response getResponse(String basePath, String requestType) {
 		RequestSpecification rSpec = reqSpec(basePath);
 		Response response = given().spec(rSpec).get();
-		printRequestLogs(rSpec);
+		printRequestLogs(rSpec, requestType);
 		printResponseLogs(response);
 		return response;
 	}

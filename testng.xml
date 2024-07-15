@@ -8,6 +8,7 @@
     <classes>
       <class name="Tests.HerokuBookingTest"/>
       <class name="Tests.HerokuBookingTest2"/>
+      <class name="Tests.HerokuBookingTest3"/>
     </classes>
   </test> <!-- Test -->
 </suite> <!-- Suite -->

@@ -31,11 +31,10 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HerokuBookingTest2 {	
+public class HerokuBookingTest3 {	
 	
 	private static Map<String, Object> headers;
 	private static Map<String, Object> responseFields;
-	
 	
 	@BeforeClass
 	public void setup() {
@@ -61,28 +60,8 @@ public class HerokuBookingTest2 {
 		headers.put("Cookie","token="+context.getAttribute("token"));
 	}
 	
-	@Test(priority = 2)
-	public void createBooking(ITestContext context) throws Exception {
-		
-		System.out.println("token from context -> "+context.getAttribute("token"));
-		String jsonBody = CreatePayloads.payloadFromFile(ConfigReader.getProperty("bookjson"));
-		Response response = SpecBuilders.getResponse(headers, "/booking", jsonBody, "post");
-		response
-		.then()
-		.header("Server", Matchers.containsString("Cowboy"))
-		.body("booking.totalprice", Matchers.equalTo(111))
-		.extract()
-		.response();
-		
-		String bookingid = response.jsonPath().get("bookingid").toString();
-		System.out.println("bookingid -> "+bookingid);
-		
-		String filePathWrite = System.getProperty("user.dir") + "/src/test/resources/responses/book_post.json";
-		Files.write(Paths.get(filePathWrite), response.asByteArray());
-	}
-	
-	@Test(priority = 3)
-	public void createBookingViaObjectMapper(ITestContext context) throws Exception {
+	@Test(priority = 4)
+	public void createBookingViaLombok(ITestContext context) throws Exception {
 		
 		System.out.println("token from context -> "+context.getAttribute("token"));
 		Response response = SpecBuilders.getResponse(headers, "/booking", CreatePayloads.createPaylodViaObjectMapper(), "post");
@@ -91,31 +70,46 @@ public class HerokuBookingTest2 {
 		
 		String filePathWrite = System.getProperty("user.dir") + "/src/test/resources/responses/book_post.json";
 		Files.write(Paths.get(filePathWrite), response.asByteArray());
+		
+		context.setAttribute("bookingid3", bookingid);
 	}
 	
-	@Test(priority = 4)
-	public void createBookingViaLombok(ITestContext context) throws Exception {
+	@Test(priority = 5, enabled = true)
+	public void patchUpdateBooking(ITestContext context) throws Exception {
+		String bookingID = context.getAttribute("bookingid3").toString();
+		String basePath = "/booking/".concat(bookingID);
 		
-		System.out.println("token from context -> "+context.getAttribute("token"));
-		Response response = SpecBuilders.getResponse(headers, "/booking", CreatePayloads.createPaylodViaLombok(), "post");
-		String bookingid = response.jsonPath().get("bookingid").toString();
-		System.out.println("bookingid -> "+bookingid);
+		String patch = "{\r\n"
+				+ "    \"firstname\" : \"James\",\r\n"
+				+ "    \"lastname\" : \"Brown\",\r\n"
+				+ "    \"totalprice\" : 111\r\n"
+				+ "}";
+					
+		Response response = given().log().all(true).headers(headers)
+				.baseUri(ConfigReader.getProperty("baseurl"))
+				.basePath(basePath)
+				.body(patch)
+				.contentType(ContentType.JSON)
+				.when()
+					.patch()
+				.then().log().all(true)
+					.statusCode(200).extract().response();
 		
-		String filePathWrite = System.getProperty("user.dir") + "/src/test/resources/responses/book_post.json";
-		Files.write(Paths.get(filePathWrite), response.asByteArray());
-		
-		context.setAttribute("bookingid2", bookingid);
-		
-		responseFields.put("firstname", response.jsonPath().getString("booking.firstname"));
-		responseFields.put("lastname", response.jsonPath().getString("booking.lastname"));
-		responseFields.put("totalprice", response.jsonPath().getInt("booking.totalprice"));
-		
+		response
+		.then()
+		.body(	"firstname", Matchers.equalTo("James"),
+				"lastname", Matchers.equalTo("Brown"),
+				"totalprice", Matchers.equalTo(111)
+			);
+		responseFields.put("firstname", response.jsonPath().getString("firstname"));
+		responseFields.put("lastname", response.jsonPath().getString("lastname"));
+		responseFields.put("totalprice", response.jsonPath().getInt("totalprice"));
 	}
 	
-	@Test(priority = 5)
+	@Test(priority = 6, enabled = true)
 	public void checkGetResponse(ITestContext context) throws Exception {
 		
-		String bookingID = context.getAttribute("bookingid2").toString();
+		String bookingID = context.getAttribute("bookingid3").toString();
 		String basePath = "/booking/".concat(bookingID);
 		Response response = SpecBuilders.getResponse(basePath, "get");
 		response
