@@ -14,7 +14,7 @@ import com.aventstack.extentreports.markuputils.MarkupHelper;
 public class Setup implements ITestListener {
 	
 	public static ExtentReports extentReports;
-	public static ThreadLocal<ExtentTest> extentTest = new ThreadLocal();
+	public static ThreadLocal<ExtentTest> extentTest = new ThreadLocal<ExtentTest>();
 	
 	@Override
 	public void onStart(ITestContext context) {

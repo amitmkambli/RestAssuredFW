@@ -46,7 +46,7 @@ public class CreatePayloads {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+		//updating json fields
 		booking.setFirstname(DataGenerator.getFirstName());
 		booking.setLastname(DataGenerator.getLastName());
 		int price = DataGenerator.getPrice();

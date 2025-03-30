@@ -19,29 +19,36 @@ import Reports.ExtentReportManager;
 public class SpecBuilders {
 	
 	public static RequestSpecification reqSpec(Map headers, String basePath,  Object body) {
-		return new RequestSpecBuilder().log(LogDetail.ALL)
-				.addHeaders(headers)
-		.setBaseUri(ConfigReader.getProperty("baseurl"))
-		.setBasePath(basePath)
-		.setContentType(ContentType.JSON)
-		.setBody(body)
-		.build();
+		return new RequestSpecBuilder()
+					.log(LogDetail.ALL)
+					.addHeaders(headers)
+					.setBaseUri(ConfigReader.getProperty("baseurl"))
+					.setBasePath(basePath)
+					.setContentType(ContentType.JSON)
+					//.addQueryParams(map for queries)
+					//.addParams(map for params)
+					.setBody(body)
+					.build();
 	}
 	
 	//getRequest
 	public static RequestSpecification reqSpec(String basePath) {
-		return new RequestSpecBuilder().log(LogDetail.ALL)
-		.setBaseUri(ConfigReader.getProperty("baseurl"))
-		.setBasePath(basePath)
-		.setContentType(ContentType.JSON)
-		.build();
+		return new RequestSpecBuilder()
+					.log(LogDetail.ALL)
+					.setBaseUri(ConfigReader.getProperty("baseurl"))
+					.setBasePath(basePath)
+					//.addQueryParams(map for queries)
+					//.addParams(map for params)
+					.setContentType(ContentType.JSON)
+					.build();
 	}
 	
 	public static ResponseSpecification resSpec() {
-		return new ResponseSpecBuilder().log(LogDetail.ALL)
-		.expectContentType(ContentType.JSON)
-		.expectStatusCode(200)
-		.build();
+		return new ResponseSpecBuilder()
+				.log(LogDetail.ALL)
+				.expectContentType(ContentType.JSON)
+				.expectStatusCode(200)
+				.build();
 	}
 	
 	public static void printRequestLogs(RequestSpecification spec, String requestType) {

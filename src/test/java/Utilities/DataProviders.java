@@ -54,7 +54,7 @@ public class DataProviders {
 		}
 		
 		dataFromExcel = dataFromExcel.stream()
-		    		  .filter(keyValuePair -> keyValuePair.get("Enabled").equalsIgnoreCase("Y"))
+		    		  .filter(map -> map.get("Enabled").equalsIgnoreCase("Y"))
 		    		  .collect(Collectors.toList());
       
 		return dataFromExcel.iterator();

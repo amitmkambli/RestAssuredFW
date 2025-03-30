@@ -97,6 +97,7 @@ public class HerokuBookingTest3 {
 				"totalprice", Matchers.equalTo(Integer.parseInt(map.get("price")))
 			);
 		
+		//comparing response from patch request and get request
 		ObjectMapper objMap = new ObjectMapper();
 		String resPatch = objMap.writerWithDefaultPrettyPrinter().writeValueAsString(responsePatch.asString());
 		

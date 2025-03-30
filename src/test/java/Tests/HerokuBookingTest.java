@@ -65,6 +65,7 @@ public class HerokuBookingTest {
 	public void createBooking(ITestContext context) throws Exception {
 		
 		System.out.println("token from context -> "+context.getAttribute("token"));
+		
 		String jsonBody = CreatePayloads.payloadFromFile(ConfigReader.getProperty("bookjson"));
 		Response response = SpecBuilders.getResponse(headers, "/booking", jsonBody, "post");
 				
